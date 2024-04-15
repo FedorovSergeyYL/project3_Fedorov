@@ -81,7 +81,8 @@ def logout():
 
 @app.errorhandler(404)
 def not_found(error):
-    return make_response(jsonify({'error': error}), 404)
+    print(error)
+    return make_response(jsonify({'error': 'not found'}), 404)
 
 
 @app.errorhandler(400)
