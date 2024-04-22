@@ -72,6 +72,12 @@ def login():
     return render_template('login.html', title='Авторизация', form=form)
 
 
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+
+    return render_template('profile.html', title='Профиль', form=form)
+
+
 @app.route('/logout')
 @login_required
 def logout():
