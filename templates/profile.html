@@ -2,15 +2,22 @@
 
 {% block content %}
 <h1>Данные профиля</h1>
-<form action="" method="post">
+<form action="/profile/current_user.id" method="post">
     {{ form.hidden_tag() }}
     <p>
-        <img src="{url_for('static', filename='img/image.jpg')}" alt="здесь должна была быть картинка, но не нашлась">
+        {% if current_user.photo %}
+        <img src="{{url_for('static', filename=current_user.photo)}}"
+            alt="здесь должна была быть картинка, но не нашлась"
+            width="250" height="250">
+        {% endif %}
     </p>
-    <div class="form-group">
+    <p>
+        {{current_user.photo}}
+    </p>
+    <p class="form-group">
         <label for="photo">Выбрать изображение</label>
         <input type="file" class="form-control-file" id="photo" name="file">
-    </div>
+    </p>
     <p>
         {{ form.name.label }}<br>
         {{ form.name(class="form-control") }}<br>

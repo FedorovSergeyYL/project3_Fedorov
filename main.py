@@ -115,6 +115,9 @@ from forms.profile import ProfileForm
 from data import db_session, news_api
 from flask_restful import reqparse, abort, Api, Resource
 
+
+MAX_FILE_SIZE = 1024 * 1024 + 1
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 api = Api(app)
@@ -202,9 +205,13 @@ def profile(id):
             form.email.data = user.email
             form.name.data = user.name
             form.about.data = user.about
-            form.photo.data = user.photo
         else:
             abort(404)
+    elif request.method == 'POST':
+        if request.files['file']:
+            db_sess = db_session.create_session()
+            user = db_sess.query(User).filter(User.id == id).first()
+            user.photo = request.files['file']
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == id).first()
@@ -212,12 +219,11 @@ def profile(id):
             user.email = form.email.data
             user.name = form.name.data
             user.about = form.about.data
-            user.photo = form.photo.data
             db_sess.commit()
             return redirect('/')
         else:
             abort(404)
-    return render_template('profile.html', title='Профиль', form=form)
+    return render_template('profile.html', form=form)
 
 
 @app.route('/logout')
