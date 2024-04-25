@@ -106,12 +106,12 @@ from flask_login import LoginManager, logout_user, login_required, current_user,
 from flask import Flask, render_template, url_for, redirect, request, make_response, session, abort, jsonify
 
 import news_resources
-from data import db_session
 from data.news import News
 from data.users import User
 from forms.loginform import LoginForm
 from forms.news import NewsForm
 from forms.user import RegisterForm
+from forms.profile import ProfileForm
 from data import db_session, news_api
 from flask_restful import reqparse, abort, Api, Resource
 
@@ -135,7 +135,7 @@ def index():
     db_sess = db_session.create_session()
     if current_user.is_authenticated:
         news = db_sess.query(News).filter(
-            (News.user == current_user) | (News.is_private == True))
+            (News.user == current_user) | (News.is_private == True) | (News.is_private != True))
     else:
         news = db_sess.query(News).filter(News.is_private != True)
     return render_template("index.html", news=news)
@@ -189,6 +189,35 @@ def login():
                                message="Неправильный логин или пароль",
                                form=form)
     return render_template('login.html', title='Авторизация', form=form)
+
+
+@app.route('/profile/<int:id>', methods=['GET', 'POST'])
+@login_required
+def profile(id):
+    form = ProfileForm()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == id).first()
+        if user:
+            form.email.data = user.email
+            form.name.data = user.name
+            form.about.data = user.about
+            form.photo.data = user.photo
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == id).first()
+        if user:
+            user.email = form.email.data
+            user.name = form.name.data
+            user.about = form.about.data
+            user.photo = form.photo.data
+            db_sess.commit()
+            return redirect('/')
+        else:
+            abort(404)
+    return render_template('profile.html', title='Профиль', form=form)
 
 
 @app.route('/logout')

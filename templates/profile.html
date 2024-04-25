@@ -1,25 +1,47 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Данные профиля {% if current_user.is_authenticated %}
-    <p>current_user.name</p>
-{% endif %}</h1>
-{% for item in news%}
-<div class="col-md6 border rounded">
-    <h2>{{item.title}}</h2>
-    <div>
-        {{item.content}}
+<h1>Данные профиля</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+        <img src="{url_for('static', filename='img/image.jpg')}" alt="здесь должна была быть картинка, но не нашлась">
+    </p>
+    <div class="form-group">
+        <label for="photo">Выбрать изображение</label>
+        <input type="file" class="form-control-file" id="photo" name="file">
     </div>
-    {% if current_user.is_authenticated and current_user == item.user %}
-    <div>
-        <a href="/news/{{ item.id }}" class="btn btn-warning">
-            Изменить
-        </a>
-        <a href="/news_delete/{{ item.id }}" class="btn btn-danger">
-            Удалить
-        </a>
-    </div>
-{% endif %}
-</div>
-{% endfor %}
+    <p>
+        {{ form.name.label }}<br>
+        {{ form.name(class="form-control") }}<br>
+        {% for error in form.name.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.email.label }}<br>
+        {{ form.email(class="form-control", type="email") }}<br>
+        {% for error in form.email.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.about.label }}<br>
+        {{ form.about(class="form-control") }}<br>
+        {% for error in form.about.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {{message}}
+    <p>
+        <a href="/logout" class="btn btn-danger">Выйти</a>
+    </p>
+</form>
 {% endblock %}
