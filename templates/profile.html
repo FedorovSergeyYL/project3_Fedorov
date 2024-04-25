@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1>Данные профиля</h1>
-<form action="/profile/current_user.id" method="post">
+<form action="/profile/current_user.id" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <p>
         {% if current_user.photo %}
